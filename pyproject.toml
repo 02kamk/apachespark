@@ -1,0 +1,18 @@
+[project]
+name = "spark-delta-iceberg"
+version = "0.1.0"
+description = "Apache Spark (PySpark) com Delta Lake e Apache Iceberg — INSERT, UPDATE e DELETE em ambiente local"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "delta-spark==3.2.0",
+    "ipykernel>=7.4.0",
+    "jupyterlab>=4.6.4",
+    "pyspark==3.5.3",
+]
+
+[dependency-groups]
+dev = [
+    "mkdocs>=1.6.1,<2",
+    "mkdocs-material>=9.7.7,<10",
+]
