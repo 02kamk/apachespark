@@ -1,0 +1,1055 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Trabalho de pesquisa de Engenharia de Dados — INSERT, UPDATE e DELETE em tabelas Delta e Iceberg com PySpark">
+      
+      
+        <meta name="author" content="Kamily Hilário das Luzes, Kauã Lucas Alves Barbosa">
+      
+      
+        <link rel="canonical" href="https://02kamk.github.io/apachespark/">
+      
+      
+      
+        <link rel="next" href="spark/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Apache Spark com Delta Lake e Apache Iceberg</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#contexto-do-trabalho" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="." title="Apache Spark com Delta Lake e Apache Iceberg" class="md-header__button md-logo" aria-label="Apache Spark com Delta Lake e Apache Iceberg" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Apache Spark com Delta Lake e Apache Iceberg
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Contexto do trabalho
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="amber"  aria-label="Mudar para modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Mudar para modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="amber"  aria-label="Mudar para modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Mudar para modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/02kamk/apachespark" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    apachespark
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Apache Spark com Delta Lake e Apache Iceberg" class="md-nav__button md-logo" aria-label="Apache Spark com Delta Lake e Apache Iceberg" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Apache Spark com Delta Lake e Apache Iceberg
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/02kamk/apachespark" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    apachespark
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contexto do trabalho
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contexto do trabalho
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#o-problema-que-esses-formatos-resolvem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O problema que esses formatos resolvem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cenario-academia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cenário: academia
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cenário: academia">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modelo-er" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modelo ER
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conjunto-de-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conjunto de dados
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roteiro-executado-nos-dois-formatos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roteiro executado nos dois formatos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ambiente-utilizado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ambiente utilizado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrantes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integrantes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="spark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apache Spark (PySpark)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="delta/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Delta Lake
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="iceberg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apache Iceberg
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#o-problema-que-esses-formatos-resolvem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O problema que esses formatos resolvem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cenario-academia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cenário: academia
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cenário: academia">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modelo-er" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modelo ER
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conjunto-de-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conjunto de dados
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roteiro-executado-nos-dois-formatos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roteiro executado nos dois formatos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ambiente-utilizado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ambiente utilizado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrantes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integrantes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="contexto-do-trabalho">Contexto do trabalho<a class="headerlink" href="#contexto-do-trabalho" title="Permanent link">&para;</a></h1>
+<p>Trabalho de pesquisa da disciplina de <strong>Engenharia de Dados</strong> sobre como o <strong>Apache Spark</strong> trabalha com dois
+formatos de tabela abertos usados em <em>Data Lakehouses</em>: o <strong>Delta Lake</strong> e o <strong>Apache Iceberg</strong>.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Objetivo</p>
+<p>Montar <strong>um único ambiente local</strong> com PySpark e Jupyter e mostrar, na prática, os comandos
+<strong>INSERT</strong>, <strong>UPDATE</strong> e <strong>DELETE</strong> em tabelas Delta e em tabelas Iceberg — e o que acontece por baixo
+(versões, snapshots e arquivos no disco).</p>
+</div>
+<h2 id="o-problema-que-esses-formatos-resolvem">O problema que esses formatos resolvem<a class="headerlink" href="#o-problema-que-esses-formatos-resolvem" title="Permanent link">&para;</a></h2>
+<p>Pense em uma planilha salva como PDF: dá para ler, mas não dá para corrigir uma célula — seria preciso gerar
+o PDF de novo. Um <em>Data Lake</em> tradicional, feito só de arquivos <strong>Parquet</strong> em pastas, tem um problema parecido:
+os arquivos são ótimos para leitura, mas <strong>não existe "alterar uma linha"</strong>. Para corrigir um dado, reescreve-se
+a pasta inteira, e se o processo cair no meio, a tabela fica pela metade.</p>
+<p><strong>Delta Lake</strong> e <strong>Apache Iceberg</strong> resolvem isso colocando uma <strong>camada de metadados</strong> (um "índice com histórico")
+em cima dos arquivos Parquet. Com ela ganhamos:</p>
+<ul>
+<li><code>UPDATE</code>, <code>DELETE</code> e <code>MERGE</code> como em um banco relacional;</li>
+<li>transações <strong>ACID</strong> (ou a alteração acontece inteira, ou não acontece);</li>
+<li><strong>histórico de versões</strong> e <em>time travel</em> (consultar a tabela como ela era antes);</li>
+<li>evolução de esquema (adicionar colunas sem reescrever tudo).</li>
+</ul>
+<p>Essa combinação — arquivos baratos de Data Lake + recursos de banco de dados — é o que se chama de <strong>Lakehouse</strong>.</p>
+<h2 id="cenario-academia">Cenário: academia<a class="headerlink" href="#cenario-academia" title="Permanent link">&para;</a></h2>
+<p>Para os exemplos foi criado um cenário simples de <strong>academia</strong>:</p>
+<ul>
+<li>a academia vende <strong>planos</strong> (Mensal, Trimestral, Anual);</li>
+<li>cada <strong>aluno</strong> está matriculado em um plano;</li>
+<li>cada vez que o aluno passa na catraca, é gravado um <strong>check-in</strong>.</li>
+</ul>
+<h3 id="modelo-er">Modelo ER<a class="headerlink" href="#modelo-er" title="Permanent link">&para;</a></h3>
+<p><img alt="Modelo ER da academia" src="assets/modelo-er.png" /></p>
+<p>O mesmo modelo em formato Mermaid:</p>
+<pre class="mermaid"><code>erDiagram
+    PLANOS ||--o{ ALUNOS : possui
+    ALUNOS ||--o{ CHECKINS : registra
+    PLANOS {
+        INT id_plano PK
+        STRING nome
+        DECIMAL valor_mensal
+        INT duracao_meses
+    }
+    ALUNOS {
+        INT id_aluno PK
+        STRING nome
+        STRING email
+        STRING cidade
+        INT id_plano FK
+        DATE data_matricula
+        BOOLEAN ativo
+    }
+    CHECKINS {
+        INT id_checkin PK
+        INT id_aluno FK
+        TIMESTAMP data_hora
+        STRING unidade
+    }</code></pre>
+<div class="admonition warning">
+<p class="admonition-title">PK e FK são lógicas</p>
+<p>Delta Lake e Iceberg <strong>não bloqueiam</strong> chave duplicada nem chave estrangeira inexistente, como faria um
+PostgreSQL. As chaves do diagrama documentam a intenção do modelo; quem garante a integridade é o processo de carga.</p>
+</div>
+<h3 id="conjunto-de-dados">Conjunto de dados<a class="headerlink" href="#conjunto-de-dados" title="Permanent link">&para;</a></h3>
+<p>O conjunto de dados <strong>foi criado pelo grupo</strong> (nenhum dataset externo foi baixado). São poucos registros,
+escritos direto nos <code>INSERT</code>, para que o efeito de cada <code>UPDATE</code> e <code>DELETE</code> possa ser conferido a olho:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">planos (3)</label><label for="__tabbed_1_2">alunos (5 + 1 via DataFrame)</label><label for="__tabbed_1_3">checkins (8)</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th>id_plano</th>
+<th>nome</th>
+<th>valor_mensal</th>
+<th>duracao_meses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Mensal</td>
+<td>99.90</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Trimestral</td>
+<td>269.70</td>
+<td>3</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Anual</td>
+<td>899.00</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th>id_aluno</th>
+<th>nome</th>
+<th>cidade</th>
+<th>id_plano</th>
+<th>data_matricula</th>
+<th>ativo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Ana Souza</td>
+<td>Criciúma</td>
+<td>1</td>
+<td>2024-01-10</td>
+<td>true</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bruno Lima</td>
+<td>Içara</td>
+<td>3</td>
+<td>2024-02-05</td>
+<td>true</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Carla Mendes</td>
+<td>Criciúma</td>
+<td>2</td>
+<td>2024-03-12</td>
+<td>true</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Diego Rocha</td>
+<td>Forquilhinha</td>
+<td>1</td>
+<td>2024-04-20</td>
+<td>false</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Elisa Martins</td>
+<td>Criciúma</td>
+<td>3</td>
+<td>2024-05-02</td>
+<td>true</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Felipe Costa</td>
+<td>Criciúma</td>
+<td>2</td>
+<td>2024-06-10</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th>id_checkin</th>
+<th>id_aluno</th>
+<th>data_hora</th>
+<th>unidade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>2024-06-03 07:15</td>
+<td>Centro</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>2024-06-03 18:40</td>
+<td>Próspera</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1</td>
+<td>2024-06-04 07:05</td>
+<td>Centro</td>
+</tr>
+<tr>
+<td>4</td>
+<td>3</td>
+<td>2024-06-04 19:10</td>
+<td>Centro</td>
+</tr>
+<tr>
+<td>5</td>
+<td>4</td>
+<td>2024-06-05 06:50</td>
+<td>Próspera</td>
+</tr>
+<tr>
+<td>6</td>
+<td>5</td>
+<td>2024-06-05 12:30</td>
+<td>Centro</td>
+</tr>
+<tr>
+<td>7</td>
+<td>4</td>
+<td>2024-06-06 06:55</td>
+<td>Próspera</td>
+</tr>
+<tr>
+<td>8</td>
+<td>2</td>
+<td>2024-06-06 18:20</td>
+<td>Próspera</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<h2 id="roteiro-executado-nos-dois-formatos">Roteiro executado nos dois formatos<a class="headerlink" href="#roteiro-executado-nos-dois-formatos" title="Permanent link">&para;</a></h2>
+<p>Os dois notebooks seguem <strong>exatamente o mesmo roteiro</strong>, para facilitar a comparação:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Etapa</th>
+<th>Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>DDL</td>
+<td>criar <code>planos</code>, <code>alunos</code> e <code>checkins</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>INSERT</td>
+<td>carga inicial via SQL + 1 aluno via DataFrame</td>
+</tr>
+<tr>
+<td>3</td>
+<td>UPDATE</td>
+<td>reajuste de 10% no plano Mensal; Ana troca para o plano Anual</td>
+</tr>
+<tr>
+<td>4</td>
+<td>DELETE</td>
+<td>aluno Diego (inativo) cancela: apaga check-ins e cadastro</td>
+</tr>
+<tr>
+<td>5</td>
+<td>MERGE</td>
+<td>Carla muda de cidade (atualiza) e Gabriela se matricula (insere)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Histórico</td>
+<td>versões (Delta) / snapshots (Iceberg) e <em>time travel</em></td>
+</tr>
+</tbody>
+</table>
+<p>Os detalhes de cada formato estão nas páginas <a href="delta/">Delta Lake</a> e <a href="iceberg/">Apache Iceberg</a>.
+Os conceitos do motor de processamento estão em <a href="spark/">Apache Spark (PySpark)</a>.</p>
+<h2 id="ambiente-utilizado">Ambiente utilizado<a class="headerlink" href="#ambiente-utilizado" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Versão</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sistema operacional</td>
+<td>Linux Ubuntu 24.04 LTS</td>
+</tr>
+<tr>
+<td>Java (OpenJDK)</td>
+<td>17</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>3.11</td>
+</tr>
+<tr>
+<td>Gerenciador de projeto/pacotes</td>
+<td><a href="https://docs.astral.sh/uv/">uv</a></td>
+</tr>
+<tr>
+<td>PySpark</td>
+<td>3.5.3</td>
+</tr>
+<tr>
+<td>delta-spark</td>
+<td>3.2.0</td>
+</tr>
+<tr>
+<td>iceberg-spark-runtime-3.5_2.12</td>
+<td>1.6.1</td>
+</tr>
+<tr>
+<td>JupyterLab / ipykernel</td>
+<td>4.x / 7.x</td>
+</tr>
+<tr>
+<td>MkDocs + Material</td>
+<td>1.6 / 9.x</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Como reproduzir</p>
+<p>O passo a passo completo de instalação e execução está no <strong>README</strong> do repositório.
+Esta documentação explica <strong>o conteúdo</strong> do trabalho; o README explica <strong>como rodar</strong>.</p>
+</div>
+<h2 id="integrantes">Integrantes<a class="headerlink" href="#integrantes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Kamily Hilário das Luzes — Kauã Lucas Alves Barbosa</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+        
+          
+          <a href="spark/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Apache Spark (PySpark)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Apache Spark (PySpark)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/02kamk/apachespark" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.sections", "navigation.top", "navigation.footer", "toc.follow", "content.code.copy", "content.code.annotate", "content.tabs.link", "search.highlight"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
